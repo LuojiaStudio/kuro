@@ -15,14 +15,28 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'name')
 
 
-class ArticleSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Article
-        fields = ('url', 'title', 'subhead', 'introduction')
-
-
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Category
         fields = ('url', 'name')
+
+
+class ArticleSerializer(serializers.HyperlinkedModelSerializer):
+    category = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='category-detail'
+    )
+
+    class Meta:
+        model = Article
+        fields = ('url', 'title', 'subhead', 'introduction', 'category', 'is_check')
+
+
+class UnCheckArticleSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Article
+        fields = ('url', 'title', 'subhead', 'introduction', 'category', 'is_check')
+
+
 
