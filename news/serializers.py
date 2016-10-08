@@ -22,21 +22,14 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ArticleSerializer(serializers.HyperlinkedModelSerializer):
-    category = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='category-detail'
-    )
+    category = serializers.PrimaryKeyRelatedField(many=True, queryset=Category.objects.all())
 
     class Meta:
         model = Article
         fields = ('url', 'title', 'subhead', 'introduction', 'category', 'is_check')
 
 
-class UnCheckArticleSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Article
-        fields = ('url', 'title', 'subhead', 'introduction', 'category', 'is_check')
+
 
 
 
