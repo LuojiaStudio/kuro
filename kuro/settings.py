@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'rest_framework',
     'corsheaders',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'DjangoUeditor'
 
 ]
 
@@ -131,6 +132,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 OAUTH2_PROVIDER = {
     # this is the list of available scopes
     'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'}
@@ -138,11 +143,11 @@ OAUTH2_PROVIDER = {
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
-    ),
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticatedO',
+    # ),
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    # ),
     'PAGE_SIZE': 10
 }

@@ -1,23 +1,30 @@
 from django.db import models
 from django.contrib import auth
+import datetime
+from DjangoUeditor.models import UEditorField
 # Create your models here.
 
 
 class Article(models.Model):
-    title = models.CharField(max_length=50)
-    subhead = models.CharField(blank=True, null=True, max_length=50)
-    introduction = models.CharField(blank=True, null=True, max_length=200)
-    content = models.TextField()
-    author = models.CharField(max_length=10, blank=True, null=True,)
-    editor = models.CharField(max_length=10, blank=True, null=True,)
-    photographer = models.CharField(max_length=10, blank=True, null=True,)
+    title = models.CharField('标题', max_length=50)
+    subhead = models.CharField('副标题', blank=True, null=True, max_length=50)
+    introduction = models.CharField('导语', blank=True, null=True, max_length=200)
+    content = UEditorField('正文', height=300, width=1000,default=u'', blank=True, imagePath="uploads/images/",toolbars='besttome', filePath='uploads/files/')
+    author = models.CharField('作者', max_length=10, blank=True, null=True,)
+    editor = models.CharField('编辑', max_length=10, blank=True, null=True,)
+    photographer = models.CharField('摄影', max_length=10, blank=True, null=True,)
+    create_time = models.DateTimeField('创建时间', default=datetime.datetime.now())
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
-    category = models.ManyToManyField('Category', blank=True, null=True)
+    category = models.ManyToManyField('Category',blank=True, null=True)
     is_check = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        verbose_name = '文章'
+        verbose_name_plural = '文章'
 
 
 class Category(models.Model):
@@ -25,3 +32,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = '标签'
+        verbose_name_plural = '标签'

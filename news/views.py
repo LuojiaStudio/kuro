@@ -3,9 +3,10 @@ from rest_framework import viewsets
 from rest_framework import generics
 from news.serializers import UserSerializer, GroupSerializer, ArticleSerializer, CategorySerializer
 from .models import Article, Category
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
-from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
+from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope, OAuth2Authentication
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -43,8 +44,20 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 class ArticleList(generics.ListAPIView):
+    """
+    API endpoint that allows Articles to be viewed
+    """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
+    permission_classes = (AllowAny,)
+
+
+class CategoryList(generics.ListAPIView):
+    """
+    API endpoint that allows Categories to be viewed
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
     permission_classes = (AllowAny,)
 
 
@@ -54,14 +67,18 @@ class ArticleViewSet(viewsets.ModelViewSet):
     """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticated, )
-    required_scopes = ['read']
-    authentication_classes = (BasicAuthentication,)
+    # permission_classes = (IsAuthenticatedOrReadOnly, TokenHasReadWriteScope)
+    # authentication_classes = (OAuth2Authentication,)
+    permission_classes = (AllowAny,)
 
 
 class CategoryViewsSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Categories to be viewed or edited.
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (BasicAuthentication,)
+    # permission_classes = (IsAuthenticatedOrReadOnly, TokenHasReadWriteScope)
+    # authentication_classes = (OAuth2Authentication,)
+    permission_classes = (AllowAny,)
 

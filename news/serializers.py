@@ -22,11 +22,9 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ArticleSerializer(serializers.HyperlinkedModelSerializer):
-    category = serializers.PrimaryKeyRelatedField(many=True, queryset=Category.objects.all())
-
     class Meta:
         model = Article
-        fields = ('url', 'title', 'subhead', 'introduction', 'category', 'is_check')
+        fields = ('url', 'id', 'title', 'subhead', 'introduction', 'content', 'category', 'create_time', 'is_check')
 
 
 
