@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
-from rest_framework import generics
+from rest_framework import viewsets, generics, filters
 from news.serializers import UserSerializer, GroupSerializer, ArticleSerializer, CategorySerializer
 from .models import Article, Category
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
@@ -70,6 +69,9 @@ class ArticleViewSet(viewsets.ModelViewSet):
     # permission_classes = (IsAuthenticatedOrReadOnly, TokenHasReadWriteScope)
     # authentication_classes = (OAuth2Authentication,)
     permission_classes = (AllowAny,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('category', 'title')
+    search_fields = ('title',)
 
 
 class CategoryViewsSet(viewsets.ModelViewSet):

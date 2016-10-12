@@ -1,3 +1,4 @@
+#coding:utf-8
 from django.db import models
 from django.contrib import auth
 import datetime
@@ -13,6 +14,7 @@ class Article(models.Model):
     author = models.CharField('作者', max_length=10, blank=True, null=True,)
     editor = models.CharField('编辑', max_length=10, blank=True, null=True,)
     photographer = models.CharField('摄影', max_length=10, blank=True, null=True,)
+    cover = models.CharField('封面图片路径', max_length=100, blank=True, null=True,)
     create_time = models.DateTimeField('创建时间', default=datetime.datetime.now())
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)

@@ -22,9 +22,10 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ArticleSerializer(serializers.HyperlinkedModelSerializer):
+    category = serializers.StringRelatedField(many=True)
     class Meta:
         model = Article
-        fields = ('url', 'id', 'title', 'subhead', 'introduction', 'content', 'category', 'create_time', 'is_check')
+        fields = ('url', 'id', 'title', 'subhead', 'introduction', 'content', 'author', 'editor', 'photographer', 'cover', 'category', 'create_time', 'views', 'likes', 'is_check')
 
 
 
