@@ -68,7 +68,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
     # permission_classes = (IsAuthenticatedOrReadOnly, TokenHasReadWriteScope)
     # authentication_classes = (OAuth2Authentication,)
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('category', 'title')
     search_fields = ('title',)
@@ -82,5 +82,5 @@ class CategoryViewsSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     # permission_classes = (IsAuthenticatedOrReadOnly, TokenHasReadWriteScope)
     # authentication_classes = (OAuth2Authentication,)
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
