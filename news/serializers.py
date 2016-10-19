@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import Article, Category
+from .models import Article, Category, View, Like
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -27,6 +27,17 @@ class ArticleSerializer(serializers.HyperlinkedModelSerializer):
         model = Article
         fields = ('url', 'id', 'title', 'subhead', 'introduction', 'content', 'author', 'editor', 'photographer', 'cover', 'category', 'create_time', 'views', 'likes', 'is_check')
 
+
+class ViewSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = View
+        fields = ('article', 'view_ip')
+
+
+class LikeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Like
+        fields = ('article', 'like_ip')
 
 
 

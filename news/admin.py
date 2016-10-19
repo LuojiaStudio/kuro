@@ -1,6 +1,6 @@
 #coding:utf-8
 from django.contrib import admin
-from .models import Article, Category
+from .models import Article, Category, View, Like
 
 
 class ArticleAdmin(admin.ModelAdmin):
@@ -22,3 +22,5 @@ class CategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(View)
+admin.site.register(Like)

@@ -16,25 +16,48 @@ class Article(models.Model):
     photographer = models.CharField('摄影', max_length=10, blank=True, null=True,)
     cover = models.CharField('封面图片路径', max_length=100, blank=True, null=True,)
     create_time = models.DateTimeField('创建时间', default=datetime.datetime.now())
-    views = models.IntegerField(default=0)
-    likes = models.IntegerField(default=0)
-    category = models.ManyToManyField('Category',blank=True, null=True)
+    category = models.ManyToManyField('Category')
     is_check = models.BooleanField(default=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.title
+
+    def _get_view(self):
+        return View.objects.filter(article_id=self.id).count()
+    views = property(_get_view)
+
+    def _get_like(self):
+        return Like.objects.filter(article_id=self.id).count()
+    likes = property(_get_like)
 
     class Meta:
         verbose_name = '文章'
         verbose_name_plural = '文章'
+        ordering = ('-id',)
 
 
 class Category(models.Model):
     name = models.CharField(max_length=10)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
     class Meta:
         verbose_name = '标签'
         verbose_name_plural = '标签'
+
+
+class View(models.Model):
+    article = models.ForeignKey('Article', related_name='view_article')
+    view_ip = models.CharField(max_length=20)
+
+    class Meta:
+        unique_together = ('article', 'view_ip')
+
+
+class Like(models.Model):
+    article = models.ForeignKey('Article', related_name='like_article')
+    like_ip = models.CharField(max_length=20)
+
+    class Meta:
+        unique_together = ('article', 'like_ip')

@@ -9,6 +9,8 @@ router.register(r'groups', views.GroupViewSet)
 # router.register(r'uncheckarticle', views.UnCheckArticleViewSet)
 router.register(r'article', views.ArticleViewSet)
 router.register(r'category', views.CategoryViewsSet)
+router.register(r'view', views.ViewViewSet)
+router.register(r'like', views.LikeViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
