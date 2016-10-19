@@ -16,6 +16,7 @@ router.register(r'like', views.LikeViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^getip/', views.get_user_ip, name='get_ip'),
     url(r'^admin/', admin.site.urls),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),

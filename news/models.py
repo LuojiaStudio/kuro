@@ -19,7 +19,7 @@ class Article(models.Model):
     category = models.ManyToManyField('Category')
     is_check = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def _get_view(self):
@@ -39,7 +39,7 @@ class Article(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=10)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:

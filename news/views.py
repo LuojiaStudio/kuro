@@ -6,15 +6,15 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope, OAuth2Authentication
-from django.http import HttpRequest
+from django.http import JsonResponse
 
 
-def get_userip(request):
-    if request.META.has_key('HTTP_X_FORWARDED_FOR'):
+def get_user_ip(request):
+    if 'HTTP_X_FORWARDED_FOR' in request.META:
         ip = request.META['HTTP_X_FORWARDED_FOR']
     else:
         ip = request.META['REMOTE_ADDR']
-    return ip
+    return JsonResponse({'ip': ip})
 
 
 class UserViewSet(viewsets.ModelViewSet):

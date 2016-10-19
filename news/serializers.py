@@ -29,12 +29,14 @@ class ArticleSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ViewSerializer(serializers.HyperlinkedModelSerializer):
+    article = serializers.PrimaryKeyRelatedField(queryset=Article.objects.all())
     class Meta:
         model = View
         fields = ('article', 'view_ip')
 
 
 class LikeSerializer(serializers.HyperlinkedModelSerializer):
+    article = serializers.PrimaryKeyRelatedField(queryset=Article.objects.all())
     class Meta:
         model = Like
         fields = ('article', 'like_ip')
