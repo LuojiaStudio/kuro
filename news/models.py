@@ -10,12 +10,21 @@ class Article(models.Model):
     title = models.CharField('标题', max_length=50)
     subhead = models.CharField('副标题', blank=True, null=True, max_length=50)
     introduction = models.CharField('导语', blank=True, null=True, max_length=200)
-    content = UEditorField('正文', height=300, width=1000,default=u'', blank=True, imagePath="uploads/images/",toolbars='besttome', filePath='uploads/files/')
+    content = UEditorField(
+        '正文',
+        height=300,
+        width=1000,
+        default=u'',
+        blank=True,
+        imagePath="uploads/images/",
+        toolbars='besttome',
+        filePath='uploads/files/'
+    )
     author = models.CharField('作者', max_length=10, blank=True, null=True,)
     editor = models.CharField('编辑', max_length=10, blank=True, null=True,)
     photographer = models.CharField('摄影', max_length=10, blank=True, null=True,)
     cover = models.CharField('封面图片路径', max_length=100, blank=True, null=True,)
-    create_time = models.DateTimeField('创建时间', default=datetime.datetime.now())
+    create_time = models.DateTimeField('创建时间', auto_now_add=True)
     category = models.ManyToManyField('Category')
     is_check = models.BooleanField(default=True)
 

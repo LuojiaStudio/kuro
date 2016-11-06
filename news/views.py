@@ -18,18 +18,12 @@ def get_user_ip(request):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
     permission_classes = [TokenHasReadWriteScope, ]
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
 
 class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
     permission_classes = [IsAuthenticatedOrReadOnly, TokenHasScope]
     required_scopes = ['groups']
     queryset = Group.objects.all()
@@ -37,27 +31,18 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 class ArticleList(generics.ListAPIView):
-    """
-    API endpoint that allows Articles to be viewed
-    """
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = (AllowAny,)
 
 
 class CategoryList(generics.ListAPIView):
-    """
-    API endpoint that allows Categories to be viewed
-    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (AllowAny,)
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows Articles to be viewed or edited.
-    """
     queryset = Article.objects.all().order_by('-id')
     serializer_class = ArticleSerializer
     # permission_classes = (IsAuthenticatedOrReadOnly, TokenHasReadWriteScope)
@@ -69,9 +54,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewsSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows Categories to be viewed or edited.
-    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     # permission_classes = (IsAuthenticatedOrReadOnly, TokenHasReadWriteScope)
