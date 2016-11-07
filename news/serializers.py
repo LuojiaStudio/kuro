@@ -23,6 +23,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 class ArticleSerializer(serializers.HyperlinkedModelSerializer):
     category = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Article
         fields = ('url', 'id', 'title', 'subhead', 'introduction', 'content', 'author', 'editor', 'photographer', 'cover', 'category', 'create_time', 'views', 'likes', 'is_check')
@@ -30,6 +31,7 @@ class ArticleSerializer(serializers.HyperlinkedModelSerializer):
 
 class ViewSerializer(serializers.HyperlinkedModelSerializer):
     article = serializers.PrimaryKeyRelatedField(queryset=Article.objects.all())
+
     class Meta:
         model = View
         fields = ('article', 'view_ip')
@@ -37,6 +39,7 @@ class ViewSerializer(serializers.HyperlinkedModelSerializer):
 
 class LikeSerializer(serializers.HyperlinkedModelSerializer):
     article = serializers.PrimaryKeyRelatedField(queryset=Article.objects.all())
+
     class Meta:
         model = Like
         fields = ('article', 'like_ip')
