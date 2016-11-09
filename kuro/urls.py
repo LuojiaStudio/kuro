@@ -25,5 +25,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^articlelist/', views.ArticleList.as_view(), name='article-list'),
     url(r'^ueditor/', include('DjangoUeditor.urls')),
-    url(r'tt', vote_view.VoteItemCreate.as_view())
+    url(r'tt/', vote_view.VoteItemCreate.as_view()),
+    url(r'gg/', vote_view.tt),
+    url(r'gettoken/', vote_view.get_token)
 ]

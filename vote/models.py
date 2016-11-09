@@ -16,7 +16,7 @@ class PhotographicWorkItem(models.Model):
 
 
 class PhotoItem(models.Model):
-    photographic_work_item = models.ForeignKey('PhotographicWorkItem')
+    photographic_work_item = models.ForeignKey('PhotographicWorkItem', related_name='photos')
     path = models.CharField(max_length=100)
 
 

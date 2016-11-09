@@ -5,12 +5,13 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from .models import VoteItem, PhotographicWorkItem, PhotoItem
-from rest_framework import viewsets, serializers
+from rest_framework import viewsets, serializers, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.authentication import TokenAuthentication
 import datetime
+import requests
 # Create your views here.
 
 
@@ -18,7 +19,7 @@ import datetime
 class PhotographicWorkItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = PhotographicWorkItem
-        fields = ('name', 'group', 'vote')
+        fields = ('id', 'name', 'group', 'vote', 'photos')
 
 
 class VoteItemSerializer(serializers.ModelSerializer):
@@ -50,16 +51,41 @@ def generate_user(school_id, password):
 
 
 def whu_student_check(school_id, password):
+    # TODO(jsceoz) check whu student
+    url = 'http://cas.whu.edu.cn/authserver/login?service=http://my.whu.edu.cn'
+    payload = {
+        'Login.Token1': '2014301500228',
+        'Login.Token2': '160279',
+        'lt': 'LT-286341-FDTecN3UfHAY5qsX3dR9ZZ5nEWBKRF1478701005935-xqjg-cas',
+        'dllt': 'userNamePasswordLogin',
+        'execution': 'e1s1',
+        '_eventId': 'submit',
+        'rmShown': 1,
+    }
+    r = requests.post(url,params=payload)
+    print(r.text)
     return True
 
 
+@csrf_exempt
 def get_token(request):
     school_id = request.POST['sid']
     password = request.POST['password']
-
     if whu_student_check(school_id, password):
-        user = generate_user(school_id, password)
-        token = create_token(user)
+        user_set = User.objects.filter(username=school_id)
+        if user_set:
+            user = user_set[0]
+        else:
+            user = generate_user(school_id, password)
+
+        user_id = user.id
+        token_set = Token.objects.filter(user_id=user_id)
+        if token_set:
+            print('have')
+            token = token_set[0].key
+        else:
+            print('none')
+            token = create_token(user)
         return JsonResponse({'token': token})
     else:
         return JsonResponse({'info': 'cant pass whu_student_check'})
@@ -93,6 +119,8 @@ class VoteItemCreate(APIView):
 class PhotographicWorkItemViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PhotographicWorkItem.objects.all()
     serializer_class = PhotographicWorkItemSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('group',)
 
 
 class PhotoItemViewSet(viewsets.ReadOnlyModelViewSet):
@@ -118,8 +146,34 @@ def is_same_vote_item_today(sid, photographic_work_item_id):
 
 
 def tt(request):
-    print(VoteItem.objects.get(id=1).create_time.date())
-    return HttpResponse('dasdas')
+    url = 'http://cas.whu.edu.cn/authserver/login'
+    payload = {
+        'username': '2014301500228',
+        'password': '160279',
+        'lt': 'LT-286341-FDTecN3UfHAY5qsX3dR9ZZ5nEWBKRF1478701005935-xqjg-cas',
+        'dllt': 'userNamePasswordLogin',
+        'execution': 'e1s1',
+        '_eventId': 'submit',
+        'rmShown': 1,
+    }
+    header = {
+
+    'Accept': 'text / html, application / xhtml + xml, application / xml;q = 0.9, image / webp, * / *;q = 0.8'
+    'Referer': 'http: // cas.whu.edu.cn / authserver / login?service = http: // my.whu.edu.cn
+    Accept - Encoding: gzip, deflate
+    Accept - Language: zh - CN, zh;
+    q = 0.8, en;
+    q = 0.6
+    Cookie: route = 6
+    c1010bc2426f9d3b968d6de008806d5;
+    JSESSIONID_ids1 = 0001
+    pqXK - 7
+    wIPfSVglz9FKuDHpp:3
+    SKVUAV11A
+    }
+    r = requests.post(url)
+    print(r.headers)
+    return HttpResponse(r.text)
 
 
 
