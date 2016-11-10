@@ -8,10 +8,12 @@ from .models import VoteItem, PhotographicWorkItem, PhotoItem
 from rest_framework import viewsets, serializers, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import TokenAuthentication
 import datetime
 import requests
+import re
 # Create your views here.
 
 
@@ -51,50 +53,46 @@ def generate_user(school_id, password):
 
 
 def whu_student_check(school_id, password):
-    # TODO(jsceoz) check whu student
-    url = 'http://cas.whu.edu.cn/authserver/login?service=http://my.whu.edu.cn'
-    payload = {
-        'Login.Token1': '2014301500228',
-        'Login.Token2': '160279',
-        'lt': 'LT-286341-FDTecN3UfHAY5qsX3dR9ZZ5nEWBKRF1478701005935-xqjg-cas',
-        'dllt': 'userNamePasswordLogin',
-        'execution': 'e1s1',
-        '_eventId': 'submit',
-        'rmShown': 1,
-    }
-    r = requests.post(url,params=payload)
-    print(r.text)
-    return True
+    url = "http://www.whusu.com.cn/check.php?sid=" + school_id + "&password=" + password
+    r = requests.get(url)
+    if r.text == '1':
+        return 1
+    else:
+        return 0
 
 
 @csrf_exempt
 def get_token(request):
     school_id = request.POST['sid']
     password = request.POST['password']
-    if whu_student_check(school_id, password):
-        user_set = User.objects.filter(username=school_id)
-        if user_set:
-            user = user_set[0]
-        else:
-            user = generate_user(school_id, password)
 
-        user_id = user.id
-        token_set = Token.objects.filter(user_id=user_id)
-        if token_set:
-            print('have')
-            token = token_set[0].key
-        else:
-            print('none')
-            token = create_token(user)
-        return JsonResponse({'token': token})
+    user_set = User.objects.filter(username=school_id)
+    if is_vote_today(school_id):
+        return JsonResponse({'info': 1})
+
+    if user_set:
+        user = user_set[0]
     else:
-        return JsonResponse({'info': 'cant pass whu_student_check'})
+        if whu_student_check(school_id, password):
+            user = generate_user(school_id, password)
+        else:
+            return JsonResponse({'info': 0})
+
+    user_id = user.id
+    token_set = Token.objects.filter(user_id=user_id)
+    if token_set:
+        print('have')
+        token = token_set[0].key
+    else:
+        print('none')
+        token = create_token(user)
+    return JsonResponse({'token': token})
 
 
 # API view
 class VoteItemCreate(APIView):
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = [IsAuthenticatedOrReadOnly, ]
 
     def get(self, request, format=None):
         vote_item = VoteItem.objects.all()
@@ -104,10 +102,10 @@ class VoteItemCreate(APIView):
     def post(self, request, format=None):
         vote_num_today = count_today_vote(request.data['school_id'])
 
-        if vote_num_today >= 12:
-            return Response({'info': 'vote limit'}, status=status.HTTP_400_BAD_REQUEST)
+        if vote_num_today >= 10:
+            return JsonResponse({'info': 1})
         if is_same_vote_item_today(request.data['school_id'], request.data['photographic_work_item']):
-            return Response({'info': 'already vote for this item'}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'info': 2})
 
         serializer = VoteItemSerializer(data=request.data)
         if serializer.is_valid():
@@ -116,14 +114,16 @@ class VoteItemCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PhotographicWorkItemViewSet(viewsets.ReadOnlyModelViewSet):
+class PhotographicWorkItemViewSet(viewsets.ModelViewSet):
     queryset = PhotographicWorkItem.objects.all()
     serializer_class = PhotographicWorkItemSerializer
+    permission_classes = [AllowAny, ]
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('group',)
+    filter_fields = ('group', 'name')
 
 
-class PhotoItemViewSet(viewsets.ReadOnlyModelViewSet):
+class PhotoItemViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny, ]
     queryset = PhotoItem.objects.all()
     serializer_class = PhotoItemSerializer
 
@@ -145,8 +145,17 @@ def is_same_vote_item_today(sid, photographic_work_item_id):
     return False
 
 
+def is_vote_today(sid):
+    vote_set = VoteItem.objects.filter(school_id=sid)
+    for item in vote_set:
+        if item.create_time.date() == datetime.datetime.now().date():
+            return True
+    return False
+
+
+
 def tt(request):
-    url = 'http://cas.whu.edu.cn/authserver/login'
+    url = 'http://cas.whu.edu.cn/authserver/login?service=http://my.whu.edu.cn'
     payload = {
         'username': '2014301500228',
         'password': '160279',
@@ -157,23 +166,36 @@ def tt(request):
         'rmShown': 1,
     }
     header = {
-
-    'Accept': 'text / html, application / xhtml + xml, application / xml;q = 0.9, image / webp, * / *;q = 0.8'
-    'Referer': 'http: // cas.whu.edu.cn / authserver / login?service = http: // my.whu.edu.cn
-    Accept - Encoding: gzip, deflate
-    Accept - Language: zh - CN, zh;
-    q = 0.8, en;
-    q = 0.6
-    Cookie: route = 6
-    c1010bc2426f9d3b968d6de008806d5;
-    JSESSIONID_ids1 = 0001
-    pqXK - 7
-    wIPfSVglz9FKuDHpp:3
-    SKVUAV11A
+        'Origin': 'http://cas.whu.edu.cn',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Encoding': 'gzip,deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6',
+        'User-Agent': 'Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, likeGecko) Chrome/54.0.2840.71 Safari/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Upgrade-Insecure-Requests': '1',
+        'Cache-Control': 'max-age=0',
     }
     r = requests.post(url)
-    print(r.headers)
-    return HttpResponse(r.text)
+
+    # pattern = re.compile(r'name=\"lt\"', flags=re.DOTALL)
+
+    match = re.findall(r'^ame=\"lt\"', r.text, flags=re.DOTALL)
+
+    if match:
+        print(match.group())
+    else:
+        print('ggg')
+
+    # pprint(r.text)
+
+    # rr = requests.post(
+    #     url,
+    #     data=payload,
+    #     cookies={'route': r.cookies['route'], 'JSESSIONID_ids1': r.cookies['JSESSIONID_ids1']},
+    #     headers=header
+    # )
+    # print(rr.text)
+    return HttpResponse('dsadas')
 
 
 

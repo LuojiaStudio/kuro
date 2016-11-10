@@ -19,6 +19,9 @@ class PhotoItem(models.Model):
     photographic_work_item = models.ForeignKey('PhotographicWorkItem', related_name='photos')
     path = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.id
+
 
 class Group(models.Model):
     name = models.CharField(max_length=20)
