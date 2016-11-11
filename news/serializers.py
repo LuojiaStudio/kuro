@@ -34,7 +34,7 @@ class ViewSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = View
-        fields = ('article', 'view_ip')
+        fields = ('article', 'view_ip', 'sort')
 
 
 class LikeSerializer(serializers.HyperlinkedModelSerializer):

@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib import auth
 import datetime
 from DjangoUeditor.models import UEditorField
+import random
 # Create your models here.
 
 
@@ -59,6 +60,7 @@ class Category(models.Model):
 class View(models.Model):
     article = models.ForeignKey('Article', related_name='view_article')
     view_ip = models.CharField(max_length=20)
+    sort = models.FloatField(default=random.random())
 
     class Meta:
         unique_together = ('article', 'view_ip')

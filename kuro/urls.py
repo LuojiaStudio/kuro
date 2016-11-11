@@ -27,5 +27,6 @@ urlpatterns = [
     url(r'^ueditor/', include('DjangoUeditor.urls')),
     url(r'tt/', vote_view.VoteItemCreate.as_view()),
     url(r'gg/', vote_view.tt),
-    url(r'gettoken/', vote_view.get_token)
+    url(r'gettoken/', vote_view.get_token),
+    url(r'random/', vote_view.random_sort)
 ]

@@ -14,6 +14,7 @@ from rest_framework.authentication import TokenAuthentication
 import datetime
 import requests
 import re
+import random
 # Create your views here.
 
 
@@ -153,7 +154,6 @@ def is_vote_today(sid):
     return False
 
 
-
 def tt(request):
     url = 'http://cas.whu.edu.cn/authserver/login?service=http://my.whu.edu.cn'
     payload = {
@@ -196,6 +196,16 @@ def tt(request):
     # )
     # print(rr.text)
     return HttpResponse('dsadas')
+
+
+def random_sort(request):
+    queryset = PhotographicWorkItem.objects.all()
+    for item in queryset:
+        item.sort = random.random()
+        print(item.sort)
+        item.save()
+    return None
+
 
 
 
