@@ -27,7 +27,7 @@ class PhotographicWorkItemSerializer(serializers.ModelSerializer):
 class VoteItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = VoteItem
-        fields = ('school_id', 'photographic_work_item', 'create_time')
+        fields = ('school_id', 'photographic_work_item', 'create_time', 'group')
 
 
 class PhotoItemSerializer(serializers.ModelSerializer):
@@ -100,10 +100,10 @@ class VoteItemCreate(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        vote_num_today = count_today_vote(request.data['school_id'])
+        # vote_num_today = count_today_vote(request.data['school_id'])
 
-        if vote_num_today >= 10:
-            return JsonResponse({'info': 1})
+        # if vote_num_today >= 10:
+        #     return JsonResponse({'info': 1})
         if is_same_vote_item_today(request.data['school_id'], request.data['photographic_work_item']):
             return JsonResponse({'info': 2})
 

@@ -35,4 +35,8 @@ class VoteItem(models.Model):
     photographic_work_item = models.ForeignKey('PhotographicWorkItem')
     create_time = models.DateTimeField(auto_now_add=True)
 
+    def _get_group(self):
+        return self.photographic_work_item.group_id
+    group = property(_get_group)
+
 
