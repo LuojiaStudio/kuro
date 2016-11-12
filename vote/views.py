@@ -22,7 +22,7 @@ import random
 class PhotographicWorkItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = PhotographicWorkItem
-        fields = ('id', 'name', 'group', 'vote', 'photos')
+        fields = ('id', 'name', 'group', 'vote', 'photos', 'sort')
 
 
 class VoteItemSerializer(serializers.ModelSerializer):
@@ -116,7 +116,7 @@ class VoteItemCreate(APIView):
 
 
 class PhotographicWorkItemViewSet(viewsets.ModelViewSet):
-    queryset = PhotographicWorkItem.objects.all()
+    queryset = PhotographicWorkItem.objects.all().order_by('sort')
     serializer_class = PhotographicWorkItemSerializer
     permission_classes = [AllowAny, ]
     filter_backends = (filters.DjangoFilterBackend,)
@@ -149,53 +149,20 @@ def is_same_vote_item_today(sid, photographic_work_item_id):
 def is_vote_today(sid):
     vote_set = VoteItem.objects.filter(school_id=sid)
     for item in vote_set:
-        if item.create_time.date() == datetime.datetime.now().date():
+        item_create_time = item.create_time + datetime.timedelta(hours=8)
+        item_date = item_create_time.date()
+        if item_date == datetime.datetime.now().date():
             return True
     return False
 
 
 def tt(request):
-    url = 'http://cas.whu.edu.cn/authserver/login?service=http://my.whu.edu.cn'
-    payload = {
-        'username': '2014301500228',
-        'password': '160279',
-        'lt': 'LT-286341-FDTecN3UfHAY5qsX3dR9ZZ5nEWBKRF1478701005935-xqjg-cas',
-        'dllt': 'userNamePasswordLogin',
-        'execution': 'e1s1',
-        '_eventId': 'submit',
-        'rmShown': 1,
-    }
-    header = {
-        'Origin': 'http://cas.whu.edu.cn',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Encoding': 'gzip,deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6',
-        'User-Agent': 'Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, likeGecko) Chrome/54.0.2840.71 Safari/537.36',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Upgrade-Insecure-Requests': '1',
-        'Cache-Control': 'max-age=0',
-    }
-    r = requests.post(url)
-
-    # pattern = re.compile(r'name=\"lt\"', flags=re.DOTALL)
-
-    match = re.findall(r'^ame=\"lt\"', r.text, flags=re.DOTALL)
-
-    if match:
-        print(match.group())
-    else:
-        print('ggg')
-
-    # pprint(r.text)
-
-    # rr = requests.post(
-    #     url,
-    #     data=payload,
-    #     cookies={'route': r.cookies['route'], 'JSESSIONID_ids1': r.cookies['JSESSIONID_ids1']},
-    #     headers=header
-    # )
-    # print(rr.text)
-    return HttpResponse('dsadas')
+    qset = VoteItem.objects.filter(school_id='2014301500228').order_by('-id')
+    vo = qset[0]
+    st = vo.create_time+datetime.timedelta(hours=8)
+    std = st.date()
+    st2 = datetime.datetime.now().date()
+    return HttpResponse(std)
 
 
 def random_sort(request):
@@ -205,7 +172,6 @@ def random_sort(request):
         print(item.sort)
         item.save()
     return None
-
 
 
 
